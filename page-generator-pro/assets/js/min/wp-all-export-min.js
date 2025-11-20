@@ -1,0 +1,1 @@
+jQuery(document).ready((function($){$("a.wpallexport-file-type").trigger("click"),$('textarea[name="wp_query"]').val(page_generator_pro_wp_all_export.query),$("form.wpallexport-choose-file").submit()}));

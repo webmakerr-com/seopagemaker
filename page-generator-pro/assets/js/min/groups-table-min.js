@@ -1,0 +1,1 @@
+jQuery(document).ready((function($){$("ul.subsubsub a").each((function(){$(this).hasClass("page-generator-pro-group-action")&&($(this).clone().removeClass("hidden").insertBefore("hr.wp-header-end"),$(this).parent().remove())}))}));

@@ -1,0 +1,1 @@
+jQuery(document).ready((function($){$("a.clear-log").on("click",(function(e){var n=$(this),a;if(!confirm($(n).data("message")))return e.preventDefault(),!1}))}));

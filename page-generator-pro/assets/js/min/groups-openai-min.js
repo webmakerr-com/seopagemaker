@@ -1,0 +1,1 @@
+jQuery(document).ready((function($){$("form").on("submit",(function(e){wpzinc_modal_open(page_generator_pro_groups_ai.building_title,page_generator_pro_groups_ai.building_message)}))}));

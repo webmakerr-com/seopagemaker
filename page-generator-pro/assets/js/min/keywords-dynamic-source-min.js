@@ -1,0 +1,1 @@
+jQuery(document).ready((function(e){page_generator_pro_conditional_fields_initialize(),e('select[name="source"]').trigger("change")}));

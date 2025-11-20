@@ -1,0 +1,128 @@
+/**
+ * Block Previews for Dynamic Elements
+ * 
+ * Renders the Dynamic Elements icon, title and description, as they'll be converted
+ * into HTML at generation. 
+ */
+.page-generator-pro-divi-module {
+	padding: 80px 20px 20px 20px;
+	border: 1px solid #000;
+	font-size: 16px;
+	text-align: center;
+
+	/**
+	 * Icons
+	 * - Don't need to include Related Links, as gutenberg.js will use the 'render_callback' argument
+	 * to call the PHP function to render that block.
+	 */
+	&.claude-ai {
+		background: url(../../../../../assets/images/icons/claude-ai.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.custom-field {
+		background: url(../../../../../_modules/dashboard/feather/file-text.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.creative-commons {
+		background: url(../../../../../assets/images/icons/creative-commons.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.gemini-ai {
+		background: url(../../../../../assets/images/icons/gemini-ai.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.google-map {
+		background: url(../../../../../_modules/dashboard/feather/map.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.google-places {
+		background: url(../../../../../_modules/dashboard/feather/map-pin.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.midjourney {
+		background: url(../../../../../assets/images/icons/midjourney.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.image-url {
+		background: url(../../../../../_modules/dashboard/feather/image.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.media-library {
+		background: url(../../../../../assets/images/icons/admin-media.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.mistral-ai {
+		background: url(../../../../../assets/images/icons/mistral-ai.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.open-street-map {
+		background: url(../../../../../assets/images/icons/open-street-map.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.open-weather-map {
+		background: url(../../../../../_modules/dashboard/feather/sun.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.openai {
+		background: url(../../../../../assets/images/icons/openai.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.openai-image {
+		background: url(../../../../../assets/images/icons/openai-image.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.openrouter {
+		background: url(../../../../../assets/images/icons/openrouter.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.perplexity {
+		background: url(../../../../../assets/images/icons/perplexity.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.pexels {
+		background: url(../../../../../assets/images/icons/pexels.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.pixabay {
+		background: url(../../../../../assets/images/icons/pixabay.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.related-links {
+		background: url(../../../../../_modules/dashboard/feather/list.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.straico {
+		background: url(../../../../../assets/images/icons/straico.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.wikipedia-image {
+		background: url(../../../../../assets/images/icons/wikipedia-image.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.wikipedia {
+		background: url(../../../../../_modules/dashboard/feather/wikipedia.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.yelp {
+		background: url(../../../../../_modules/dashboard/feather/yelp.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+	&.youtube {
+		background: url(../../../../../_modules/dashboard/feather/youtube.svg) 50% 20px no-repeat;
+		background-size: 32px auto;
+	}
+
+	.page-generator-pro-block-title {
+		padding: 0 0 15px 0;
+		font-size: 17px;
+		font-weight: 700;
+	}
+	.page-generator-pro-block-description {
+		font-size: 14px;
+	}
+}
+
+/**
+ * Related Links
+ */
+/* @import "related-links"; */
