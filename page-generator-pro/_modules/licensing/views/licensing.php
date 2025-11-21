@@ -15,9 +15,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<h1>
 		<?php echo esc_html( $this->plugin->displayName ); ?>
 
-		<span>
-			<?php esc_html_e( 'Licensing', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?>
-		</span>
+                <span>
+                        <?php esc_html_e( 'Licensing (Optional)', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?>
+                </span>
 	</h1>
 </header>
 
@@ -77,36 +77,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<!-- Form Start -->
 					<form name="post" method="post" action="<?php echo ( isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' ); ?>">
 						<div id="normal-sortables" class="meta-box-sortables ui-sortable">                        
-							<div class="postbox">
-								<h3 class="hndle"><?php esc_html_e( 'License Key', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></h3>
+                                                        <div class="postbox">
+                                                                <h3 class="hndle"><?php esc_html_e( 'License (Identification Only)', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></h3>
 
-								<?php
-								// If the license key is defined in wp-config as a constant, just display it here and don't offer the option to edit.
-								if ( $this->is_license_key_a_constant() ) {
-									?>
-									<div class="wpzinc-option">
-										<div class="full">
-											<input type="password" name="ignored" value="****************************************" class="widefat" disabled="disabled" />
-										</div>
-									</div>
-									<?php
-								} else {
-									// Get from options table.
-									$license_key = get_option( $this->plugin->name . '_licenseKey' );
-									$input_type  = ( $this->check_license_key_valid( false ) ? 'password' : 'text' );
-									?>
-									<div class="inside">
-										<input type="<?php echo esc_attr( $input_type ); ?>" name="<?php echo esc_attr( $this->plugin->name ); ?>[licenseKey]" value="<?php echo esc_attr( $license_key ); ?>" class="widefat" />
-									</div>
-									<div class="inside">
-										<input type="submit" name="submit" value="<?php esc_attr_e( 'Save' ); // phpcs:ignore WordPress.WP.I18n ?>" class="button button-primary" /> 
-									</div>
-									<?php
-								}
-								?>
-							</div>
-							<!-- /postbox -->
-						</div>
+                                                                <div class="inside">
+                                                                        <p><?php esc_html_e( 'Adding a license name or key is optional and kept locally to help you identify this site. All features remain available regardless of what you enter.', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></p>
+                                                                </div>
+
+                                                                <?php
+                                                                // If the license key is defined in wp-config as a constant, just display it here and don't offer the option to edit.
+                                                                if ( $this->is_license_key_a_constant() ) {
+                                                                        ?>
+                                                                        <div class="wpzinc-option">
+                                                                                <div class="full">
+                                                                                        <input type="text" name="ignored" value="<?php echo esc_attr( $this->get_license_key() ); ?>" class="widefat" disabled="disabled" />
+                                                                                </div>
+                                                                        </div>
+                                                                        <?php
+                                                                } else {
+                                                                        // Get from options table.
+                                                                        $license_key = get_option( $this->plugin->name . '_licenseKey' );
+                                                                        ?>
+                                                                        <div class="inside">
+                                                                                <input type="text" name="<?php echo esc_attr( $this->plugin->name ); ?>[licenseKey]" value="<?php echo esc_attr( $license_key ); ?>" class="widefat" />
+                                                                        </div>
+                                                                        <div class="inside">
+                                                                                <input type="submit" name="submit" value="<?php esc_attr_e( 'Save' ); // phpcs:ignore WordPress.WP.I18n ?>" class="button button-primary" />
+                                                                        </div>
+                                                                        <?php
+                                                                }
+                                                                ?>
+                                                        </div>
+                                                        <!-- /postbox -->
+                                                </div>
 						<!-- /normal-sortables -->
 					</form>
 					<!-- /form end -->
