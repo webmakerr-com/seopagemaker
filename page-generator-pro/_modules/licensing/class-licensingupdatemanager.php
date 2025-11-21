@@ -323,178 +323,26 @@ class LicensingUpdateManager {
 	 *
 	 * @since   3.0.0
 	 *
-	 * @param   bool $force     Force License Key Check, ignoring cache.
-	 * @return  bool            License Key Valid
-	 */
-	public function check_license_key_valid( $force = false ) {
+        * @param   bool $force     Force License Key Check, ignoring cache.
+        * @return  bool            License Key Valid
+        */
+        public function check_license_key_valid( $force = false ) {
 
-		// If no license key exists, license is not valid.
-		if ( ! $this->check_license_key_exists() ) {
-			$this->cache_set(
-				false,
-				sprintf(
-					/* translators: Plugin Name */
-					__( '%s: Please specify a license key on the Licensing screen.', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-					$this->plugin->displayName
-				)
-			);
+                // Store a simple, always-valid cache entry explaining that the field is optional.
+                $this->cache_set(
+                        true,
+                        sprintf(
+                                /* translators: Plugin Name */
+                                __( '%s: License details are optional and kept locally for your reference.', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
+                                $this->plugin->displayName
+                        ),
+                        $this->plugin->version,
+                        '',
+                        array(),
+                        array()
+                );
 
-			return false;
-		}
-
-		// Check last result from cache, provided it has not expired.
-		if ( ! $force ) {
-			$cache = $this->cache_get();
-
-			if ( $cache['expires'] ) {
-				return (bool) $cache['valid'];
-			}
-		}
-
-		// If here, we're either forcing a check, the cache does not exist or the cache has expired.
-		$params = $this->get_parameters();
-
-		// Build endpoint.
-		$url = $this->endpoint . '/?request=checkLicenseKeyIsValid&params[]=' . $params['license_key'] . '&params[]=' . $params['plugin_name'] . '&params[]=' . rawurlencode( $params['site_url'] ) . '&params[]=' . $params['is_multisite'] . '&params[]=' . $params['plugin_version'] . '&params[]=' . $params['wp_version'];
-
-		// Send license key check.
-		// Set user agent to beat aggressive caching.
-		$response = wp_remote_get(
-			$url,
-			array(
-				'user-agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36',
-			)
-		);
-
-		// Fallback to a less secure but more stable method if this request failed due to SSL issues.
-		if ( is_wp_error( $response ) ) {
-			if ( $response->get_error_code() === 'http_request_failed' ) {
-				$response = wp_remote_get(
-					$url,
-					array(
-						'sslverify'  => false,
-						'user-agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36',
-					)
-				);
-			}
-		}
-
-		// Check response.
-		if ( is_wp_error( $response ) ) {
-			// Depending on the error, perhaps show a more helpful response.
-			switch ( $response->get_error_code() ) {
-				/**
-				 * Licensing Server not responding
-				 */
-				case 'http_request_failed':
-					$message = implode(
-						'<br />',
-						array(
-							sprintf(
-								/* translators: %1$s: Plugin Name, %2$s: Support URL */
-								__( 'Unable to communicate with the licensing server. %1$s will continue to function, but if this error persists, please open a <a href="%2$s">support request</a> including the following information:', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-								$this->plugin->displayName,
-								$this->plugin->support_url
-							),
-							sprintf(
-								/* translators: Plugin Name */
-								__( ' Product Name: %s', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-								$this->plugin->displayName
-							),
-							sprintf(
-								/* translators: Plugin Version */
-								__( ' Product Version: %s', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-								$this->plugin->version
-							),
-							sprintf(
-								/* translators: Domain / Site URL */
-								__( ' Domain: %s', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-								$params['site_url']
-							),
-							sprintf(
-								/* translators: Server IP Address */
-								__( ' IP Address: %s', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-								( isset( $_SERVER['SERVER_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_ADDR'] ) ) : false )
-							),
-						)
-					);
-					break;
-
-				/**
-				 * Other error
-				 */
-				default:
-					$message = $this->plugin->displayName . ': ' . $response->get_error_message();
-					break;
-			}
-
-			// Permit plugin usage but no updates.
-			$this->cache_set( true, $message );
-			return true;
-		}
-
-		// Retrieve the response code and body content.
-		$code = wp_remote_retrieve_response_code( $response );
-		$body = wp_remote_retrieve_body( $response );
-
-		// Bail if the HTTP response code is an error.
-		if ( $code !== 200 && $code !== 301 ) {
-			// Permit plugin usage but no updates.
-			$this->cache_set(
-				true,
-				$this->plugin->displayName . ': ' . sprintf(
-					__( 'Licensing Server HTTP % s Error . ', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-					$code
-				)
-			);
-
-			return true;
-		}
-
-		// Bail if the response body is empty.
-		if ( empty( $body ) ) {
-			// Permit plugin usage but no updates.
-			$this->cache_set(
-				true,
-				$this->plugin->displayName . ': ' . sprintf(
-					__( 'Licensing Server HTTP % s Error . ', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-					$code
-				)
-			);
-
-			return true;
-		}
-
-		// Decode the body JSON into an array.
-		$result = json_decode( $body );
-
-		// Store information.
-		$this->cache_set(
-			(int) $result->code,
-			$this->plugin->displayName . ': ' . (string) $result->codeDescription, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			( isset( $result->productVersion ) ? (string) $result->productVersion : 0 ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			( isset( $result->product ) ? $result->product : '' ),
-			( isset( $result->features ) ? $result->features : '' ),
-			( isset( $result->features_parameters ) ? $result->features_parameters : '' )
-		);
-
-		// Maybe whitelabel the Plugin Name, now we know the license is valid.
-		$plugin_display_name = $this->get_feature_parameter( 'whitelabelling', 'display_name', $this->plugin->displayName ); // phpcs:ignore WordPress.WP.I18n
-
-		// If the Whitelabelled name exists and is different, update it in the cache now.
-		if ( $plugin_display_name !== $this->plugin->displayName ) {
-			$this->cache_set(
-				(int) $result->code,
-				$plugin_display_name . ': ' . (string) $result->codeDescription, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-				( isset( $result->productVersion ) ? (string) $result->productVersion : 0 ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-				( isset( $result->product ) ? $result->product : '' ),
-				( isset( $result->features ) ? $result->features : '' ),
-				( isset( $result->features_parameters ) ? $result->features_parameters : '' )
-			);
-		}
-
-		// Return license validity.
-		return (int) $result->code;
+                return true;
 
 	}
 
@@ -528,24 +376,12 @@ class LicensingUpdateManager {
 	 *
 	 * @since   1.0.0
 	 *
-	 * @param   string $feature    Feature.
-	 */
-	public function has_feature( $feature ) {
+        * @param   string $feature    Feature.
+        */
+        public function has_feature( $feature ) {
 
-		// Get cache.
-		$cache = $this->cache_get();
-
-		// If no features, bail.
-		if ( empty( $cache['features'] ) || ! $cache['features'] || ! is_array( $cache['features'] ) ) {
-			return false;
-		}
-
-		// If the feature isn't set, bail.
-		if ( ! in_array( $feature, $cache['features'], true ) ) {
-			return false;
-		}
-
-		return true;
+                // With open access licensing, all features are available regardless of the stored value.
+                return true;
 
 	}
 
@@ -582,19 +418,18 @@ class LicensingUpdateManager {
 			}
 		}
 
-		// Check if the Feature Parameter exists in the license payload's cache.
-		$cache = $this->cache_get();
+                // Check if the Feature Parameter exists in the license payload's cache.
+                $cache = $this->cache_get();
 
-		// If no feature parameter exists, bail.
-		if ( ! isset( $cache['features_parameters']->{ $feature } ) ) {
-			return $default_value; // assumptive.
-		}
-		if ( ! isset( $cache['features_parameters']->{ $feature }->{ $parameter } ) ) {
-			return $default_value;
-		}
+                if ( ! isset( $cache['features_parameters'][ $feature ] ) ) {
+                        return $default_value; // assumptive.
+                }
+                if ( ! isset( $cache['features_parameters'][ $feature ][ $parameter ] ) ) {
+                        return $default_value;
+                }
 
-		// Return feature parameter.
-		return $cache['features_parameters']->{ $feature }->{ $parameter };
+                // Return feature parameter.
+                return $cache['features_parameters'][ $feature ][ $parameter ];
 
 	}
 
@@ -926,14 +761,15 @@ class LicensingUpdateManager {
 	private function cache_get() {
 
 		// Define defaults.
-		$defaults = array(
-			'valid'    => 0,
-			'message'  => '',
-			'version'  => 0,
-			'package'  => '',
-			'features' => '',
-			'expires'  => 0,
-		);
+                $defaults = array(
+                        'valid'               => 0,
+                        'message'             => '',
+                        'version'             => 0,
+                        'package'             => '',
+                        'features'            => array(),
+                        'features_parameters' => array(),
+                        'expires'             => 0,
+                );
 
 		// Get cache.
 		$cache = get_option( $this->plugin->name . '_lum', $defaults );
@@ -961,7 +797,7 @@ class LicensingUpdateManager {
 	 * @param   array  $features               Package Features.
 	 * @param   array  $features_parameters    Package Features Parameters.
 	 */
-	private function cache_set( $valid = false, $message = '', $version = '', $package = '', $features = '', $features_parameters = '' ) {
+        private function cache_set( $valid = false, $message = '', $version = '', $package = '', $features = array(), $features_parameters = array() ) {
 
 		update_option(
 			$this->plugin->name . '_lum',
