@@ -69,14 +69,23 @@ class LicensingUpdateManager {
 	 */
 	public $endpoint = false;
 
-	/**
-	 * Holds notices to output in the Administration UI.
-	 *
-	 * @since   1.0.0
-	 *
-	 * @var     bool|stdClass
-	 */
-	public $notice = false;
+        /**
+         * Holds notices to output in the Administration UI.
+         *
+         * @since   1.0.0
+         *
+         * @var     bool|stdClass
+         */
+        public $notice = false;
+
+        /**
+         * Holds an error message to output on the Licensing screen.
+         *
+         * @since 5.3.3
+         *
+         * @var string
+         */
+        public $errorMessage = ''; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
 	 * Holds an array of submenus to display, if any
