@@ -300,18 +300,28 @@ class LicensingUpdateManager {
 	 *
 	 * @return  string  License Key
 	 */
-	public function get_license_key() {
+        public function get_license_key() {
 
-		// If the license key is defined in wp-config, use that.
-if ( $this->is_license_key_a_constant() ) {
-// Get from wp-config.
-$license_key = constant( strtoupper( $this->plugin->name ) . '_LICENSE_KEY' );
-} else {
-// Get from options table.
-$license_key = get_option( $this->license_option_name );
-}
+                // If the license key is defined in wp-config, use that.
+                if ( $this->is_license_key_a_constant() ) {
+                        // Get from wp-config.
+                        $license_key = constant( strtoupper( $this->plugin->name ) . '_LICENSE_KEY' );
+                } else {
+                        // Get from options table.
+                        $license_key = get_option( $this->license_option_name );
+                }
 
-		return $license_key;
+                // Always fall back to a bundled key so the plugin remains functional
+                // without requiring users to enter a license.
+                if ( empty( $license_key ) ) {
+                        $license_key = $this->valid_license_key;
+
+                        // Persist the fallback to avoid repeated lookups and to keep
+                        // dependent integrations supplied with a key.
+                        update_option( $this->license_option_name, $license_key );
+                }
+
+                return $license_key;
 
 	}
 
@@ -358,35 +368,24 @@ $license_key = get_option( $this->license_option_name );
         */
         public function check_license_key_valid( $force = false ) {
 
+                // Treat the bundled license key as always valid to remove runtime
+                // restrictions while keeping downstream code paths unchanged.
                 $license_key = trim( (string) $this->get_license_key() );
-                $valid       = ( $license_key === $this->valid_license_key );
 
-                if ( $valid ) {
-                        $this->cache_set(
-                                true,
-                                sprintf(
-                                        /* translators: Plugin Name */
-                                        __( '%s: License validated.', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-                                        $this->plugin->displayName
-                                ),
-                                $this->plugin->version,
-                                '',
-                                array(),
-                                array()
-                        );
+                $this->cache_set(
+                        true,
+                        sprintf(
+                                /* translators: Plugin Name */
+                                __( '%s: License validated.', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
+                                $this->plugin->displayName
+                        ),
+                        $this->plugin->version,
+                        '',
+                        array(),
+                        array()
+                );
 
-                        return true;
-                }
-
-                $message = __( 'A valid license key is required to use Webmakerr Location Pages.', $this->plugin->name );
-
-                $this->cache_set( false, $message, '', '', array(), array() );
-
-                if ( is_admin() && $this->is_license_screen() ) {
-                        $this->errorMessage = $message; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-                }
-
-                return false;
+                return true;
 
         }
 
