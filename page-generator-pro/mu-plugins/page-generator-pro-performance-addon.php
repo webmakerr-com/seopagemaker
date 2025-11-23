@@ -1,12 +1,13 @@
 <?php
-/*
-Plugin Name: Page Generator Pro: Performance Addon
-Plugin URI: http://www.wpzinc.com/plugins/page-generator-pro
-Description: Runs the Page Generator Pro Generation Routine in Performance Mode, which loads minimal resources for faster generation times.
-Version: 4.5.6
-Author: WP Zinc
-Author URI: http://www.wpzinc.com
-*/
+/**
+ * Page Generator Pro: Performance Addon
+ *
+ * This file is designed to run as a must-use plugin once Page Generator Pro
+ * copies it into the WordPress mu-plugins directory. Removing the standard
+ * plugin header here prevents WordPress from treating it as a standalone
+ * plugin during installation, which previously caused the installer to
+ * redirect to this file and display an "invalid header" error.
+ */
 
 /**
  * Page Generator Pro: Performance Addon
