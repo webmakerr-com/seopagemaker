@@ -70,7 +70,7 @@ class Page_Generator_Pro {
 		// Plugin Details.
 		$this->plugin                    = new stdClass();
 		$this->plugin->name              = 'page-generator-pro';
-		$this->plugin->displayName       = 'Page Generator Pro';
+                $this->plugin->displayName       = 'Webmakerr Location Pages';
 		$this->plugin->description       = 'The most powerful WordPress content generator plugin on the market.';
 		$this->plugin->author_name       = 'WP Zinc';
 		$this->plugin->version           = PAGE_GENERATOR_PRO_PLUGIN_VERSION;
@@ -79,7 +79,7 @@ class Page_Generator_Pro {
 		$this->plugin->folder            = PAGE_GENERATOR_PRO_PLUGIN_PATH;
 		$this->plugin->url               = PAGE_GENERATOR_PRO_PLUGIN_URL;
 		$this->plugin->documentation_url = 'https://www.wpzinc.com/documentation/page-generator-pro';
-		$this->plugin->support_url       = 'https://www.wpzinc.com/support';
+                $this->plugin->support_url       = 'https://webmakerr.com/contact-us';
 		$this->plugin->upgrade_url       = 'https://www.wpzinc.com/plugins/page-generator-pro';
 
 		// Design.

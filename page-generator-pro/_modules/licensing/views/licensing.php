@@ -81,7 +81,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <h3 class="hndle"><?php esc_html_e( 'License Key', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></h3>
 
 <div class="inside">
-<p><?php esc_html_e( 'Enter your license key to unlock Page Generator Pro. Access to all plugin features is blocked until a valid key is provided.', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></p>
+<p><?php esc_html_e( 'Enter your license key to unlock Webmakerr Location Pages. Access to all plugin features is blocked until a valid key is provided.', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></p>
 </div>
 
                                                                 <?php
