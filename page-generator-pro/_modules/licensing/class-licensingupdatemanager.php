@@ -378,7 +378,7 @@ $license_key = get_option( $this->license_option_name );
                         return true;
                 }
 
-                $message = __( 'A valid license key is required to use Page Generator Pro.', $this->plugin->name );
+                $message = __( 'A valid license key is required to use Webmakerr Location Pages.', $this->plugin->name );
 
                 $this->cache_set( false, $message, '', '', array(), array() );
 

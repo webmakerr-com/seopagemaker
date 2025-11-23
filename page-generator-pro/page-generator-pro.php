@@ -1,11 +1,11 @@
 <?php
 /**
- * Page Generator Pro WordPress Plugin.
+ * Webmakerr Location Pages WordPress Plugin.
  *
  * @package Page_Generator_Pro
  * @author WP Zinc
  *
- * Plugin Name: Page Generator Pro
+ * Plugin Name: Webmakerr Location Pages
  * Plugin URI: http://www.wpzinc.com/plugins/page-generator-pro
  * Version: 5.3.3
  * Author: WP Zinc
