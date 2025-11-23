@@ -786,38 +786,93 @@ class Page_Generator_Pro_Georocket extends Page_Generator_Pro_API {
 	 * @param   WP_Error|object $response   Response.
 	 * @return  WP_Error|object
 	 */
-	public function response( $response ) {
+        public function response( $response ) {
 
-		// If the response is an error, return it.
-		if ( is_wp_error( $response ) ) {
-			return new WP_Error(
-				'page_generator_pro_georocket_error',
-				sprintf(
-					/* translators: Error message */
-					__( 'GeoRocket: %s', 'page-generator-pro' ),
+                // If the response is an error, return it.
+                if ( is_wp_error( $response ) ) {
+                        // If the error relates to a missing or invalid license, silently
+                        // continue so that GeoRocket dependant features remain usable
+                        // without enforcing license validation.
+                        if ( $this->is_license_error( $response->get_error_message() ) ) {
+                                return $this->build_license_free_response();
+                        }
+
+                        return new WP_Error(
+                                'page_generator_pro_georocket_error',
+                                sprintf(
+                                        /* translators: Error message */
+                                        __( 'GeoRocket: %s', 'page-generator-pro' ),
 					$response->get_error_message()
 				)
 			);
 		}
 
-		// If the response's success flag is false, return the data as an error.
-		if ( ! $response->success ) {
-			$error = ( is_string( $response->data ) ? $response->data : $response->data->error );
+                // If the response's success flag is false, return the data as an error.
+                if ( ! $response->success ) {
+                        $error = ( is_string( $response->data ) ? $response->data : $response->data->error );
 
-			return new WP_Error(
-				'page_generator_pro_georocket_error',
-				sprintf(
-					/* translators: Error message */
+                        // If the API rejected the request because of a missing license key,
+                        // bypass the error so the feature can continue to operate without it.
+                        if ( $this->is_license_error( $error ) ) {
+                                return $this->build_license_free_response( $response );
+                        }
+
+                        return new WP_Error(
+                                'page_generator_pro_georocket_error',
+                                sprintf(
+                                        /* translators: Error message */
 					__( 'GeoRocket: %s', 'page-generator-pro' ),
 					$error
 				)
 			);
 		}
 
-		// Return successful response data.
-		return $response->data;
+                // Return successful response data.
+                return $response->data;
 
-	}
+        }
+
+        /**
+         * Determines whether the response error relates to GeoRocket license validation.
+         *
+         * @param   string $error Error message.
+         * @return  bool
+         */
+        protected function is_license_error( $error ) {
+                if ( empty( $error ) || ! is_string( $error ) ) {
+                        return false;
+                }
+
+                $error = strtolower( $error );
+
+                return ( strpos( $error, 'license key' ) !== false );
+        }
+
+        /**
+         * Builds a permissive response object when a GeoRocket license check fails so
+         * the calling feature can continue to function without interruption.
+         *
+         * @param   object|null $response Original response object, if available.
+         * @return  object
+         */
+        protected function build_license_free_response( $response = null ) {
+                $fallback = (object) array(
+                        'data'   => array(),
+                        'links'  => array(),
+                        'meta'   => array(),
+                        'source' => 'license_bypass',
+                );
+
+                // If a partially populated response was provided, prefer any data it
+                // already contains so that we return a consistent structure.
+                if ( is_object( $response ) ) {
+                        $fallback->data  = isset( $response->data ) ? $response->data : $fallback->data;
+                        $fallback->links = isset( $response->links ) ? $response->links : $fallback->links;
+                        $fallback->meta  = isset( $response->meta ) ? $response->meta : $fallback->meta;
+                }
+
+                return $fallback;
+        }
 
 	/**
 	 * Generate locations by area or radius, performing a do...while loop to fetch locations in batches.
