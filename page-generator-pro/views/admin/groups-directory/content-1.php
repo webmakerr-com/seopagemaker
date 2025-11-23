@@ -108,7 +108,7 @@
 			?>
 			<div>
 				<label for="region_id"><?php esc_html_e( 'Regions / States', 'page-generator-pro' ); ?></label>
-				<select name="region_id[]" multiple="multiple" class="wpzinc-selectize" data-action="page_generator_pro_georocket" data-api-call="get_regions" data-country-code="country_code" data-value-field="id" data-output-fields="region_name,country_code" data-nonce="<?php echo esc_attr( wp_create_nonce( 'generate_locations' ) ); ?>">
+                                <select name="region_id[]" multiple="multiple" class="wpzinc-selectize-api" data-action="page_generator_pro_georocket" data-api-call="get_regions" data-api-search-field="region_name" data-country-code="country_code" data-value-field="id" data-output-fields="region_name,country_code" data-nonce="<?php echo esc_attr( wp_create_nonce( 'generate_locations' ) ); ?>">
 				</select>
 				<p class="description">
 					<?php esc_html_e( 'Start typing the Regions / States that your business serves. Multiple Regions / States can be specified. If you serve in specific Counties, use the Counties option below.', 'page-generator-pro' ); ?>
