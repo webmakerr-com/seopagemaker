@@ -21,6 +21,24 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class LicensingUpdateManager {
 
+        /**
+         * Option name to store the license value.
+         *
+         * @since 5.3.3
+         *
+         * @var string
+         */
+        private $license_option_name = 'webmakerr_lpb_license';
+
+        /**
+         * Valid license key value.
+         *
+         * @since 5.3.3
+         *
+         * @var string
+         */
+        private $valid_license_key = 'WEBM-LPB-9921-FF28-MK77-AX3Q';
+
 	/**
 	 * Flag to determine if we've queried the remote endpoint
 	 * for updates. Prevents plugin update checks running
@@ -127,7 +145,8 @@ class LicensingUpdateManager {
 				if ( filter_has_var( INPUT_POST, $this->plugin->name ) ) {
 					$data = filter_input( INPUT_POST, $this->plugin->name, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 					if ( isset( $data['licenseKey'] ) ) {
-						update_option( $this->plugin->name . '_licenseKey', sanitize_text_field( wp_unslash( $data['licenseKey'] ) ) );
+						update_option( $this->license_option_name, sanitize_text_field( wp_unslash( $data['licenseKey'] ) ) );
+						$this->cache_delete();
 					}
 				}
 
@@ -141,6 +160,8 @@ class LicensingUpdateManager {
 			// Hooks and Filters.
 			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 			add_filter( 'plugins_api', array( $this, 'plugins_api' ), 10, 3 );
+			add_action( 'admin_init', array( $this, 'maybe_block_without_license' ), 0 );
+			add_action( 'current_screen', array( $this, 'maybe_block_on_screen' ) );
 
 			// Whitelabelling Filters.
 			add_filter( 'all_plugins', array( $this, 'maybe_filter_plugin_name' ) );
@@ -273,13 +294,13 @@ class LicensingUpdateManager {
 	public function get_license_key() {
 
 		// If the license key is defined in wp-config, use that.
-		if ( $this->is_license_key_a_constant() ) {
-			// Get from wp-config.
-			$license_key = constant( strtoupper( $this->plugin->name ) . '_LICENSE_KEY' );
-		} else {
-			// Get from options table.
-			$license_key = get_option( $this->plugin->name . '_licenseKey' );
-		}
+if ( $this->is_license_key_a_constant() ) {
+// Get from wp-config.
+$license_key = constant( strtoupper( $this->plugin->name ) . '_LICENSE_KEY' );
+} else {
+// Get from options table.
+$license_key = get_option( $this->license_option_name );
+}
 
 		return $license_key;
 
@@ -328,23 +349,167 @@ class LicensingUpdateManager {
         */
         public function check_license_key_valid( $force = false ) {
 
-                // Store a simple, always-valid cache entry explaining that the field is optional.
-                $this->cache_set(
-                        true,
-                        sprintf(
-                                /* translators: Plugin Name */
-                                __( '%s: License details are optional and kept locally for your reference.', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
-                                $this->plugin->displayName
-                        ),
-                        $this->plugin->version,
-                        '',
-                        array(),
-                        array()
-                );
+                $license_key = trim( (string) $this->get_license_key() );
+                $valid       = ( $license_key === $this->valid_license_key );
 
-                return true;
+                if ( $valid ) {
+                        $this->cache_set(
+                                true,
+                                sprintf(
+                                        /* translators: Plugin Name */
+                                        __( '%s: License validated.', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
+                                        $this->plugin->displayName
+                                ),
+                                $this->plugin->version,
+                                '',
+                                array(),
+                                array()
+                        );
 
-	}
+                        return true;
+                }
+
+                $message = __( 'A valid license key is required to use Page Generator Pro.', $this->plugin->name );
+
+                $this->cache_set( false, $message, '', '', array(), array() );
+
+                if ( is_admin() && $this->is_license_screen() ) {
+                        $this->errorMessage = $message; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+                }
+
+                return false;
+
+        }
+
+        /**
+         * Determines if the current request is the license screen.
+         *
+         * @since 5.3.3
+         *
+         * @return bool
+         */
+        private function is_license_screen() {
+
+                return ( filter_has_var( INPUT_GET, 'page' ) && filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) === $this->plugin->name );
+
+        }
+
+        /**
+         * Determines if the current request targets any plugin page via query parameters.
+         *
+         * @since 5.3.3
+         *
+         * @return bool
+         */
+        private function is_plugin_request() {
+
+                $page      = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+                $post_type = filter_input( INPUT_GET, 'post_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+                $taxonomy  = filter_input( INPUT_GET, 'taxonomy', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
+                if ( $page && strpos( $page, $this->plugin->name ) === 0 ) {
+                        return true;
+                }
+
+                if ( $post_type === $this->plugin->name ) {
+                        return true;
+                }
+
+                if ( $taxonomy && strpos( $taxonomy, $this->plugin->name ) === 0 ) {
+                        return true;
+                }
+
+                return false;
+
+        }
+
+        /**
+         * Determines if the supplied screen matches a plugin page.
+         *
+         * @since 5.3.3
+         *
+         * @param WP_Screen $screen Screen object.
+         * @return bool
+         */
+        private function is_plugin_screen( $screen ) {
+
+                if ( ! $screen ) {
+                        return false;
+                }
+
+                if ( $screen->post_type === $this->plugin->name ) {
+                        return true;
+                }
+
+                if ( $screen->taxonomy && strpos( $screen->taxonomy, $this->plugin->name ) === 0 ) {
+                        return true;
+                }
+
+                if ( $screen->id && strpos( $screen->id, $this->plugin->name ) === 0 ) {
+                        return true;
+                }
+
+                return false;
+
+        }
+
+        /**
+         * Redirects to the license screen if the license is invalid when loading plugin pages early in the request.
+         *
+         * @since 5.3.3
+         */
+        public function maybe_block_without_license() {
+
+                if ( ! is_admin() ) {
+                        return;
+                }
+
+                if ( $this->check_license_key_valid() ) {
+                        return;
+                }
+
+                if ( $this->is_license_screen() ) {
+                        return;
+                }
+
+                if ( ! $this->is_plugin_request() ) {
+                        return;
+                }
+
+                wp_safe_redirect( admin_url( 'admin.php?page=' . $this->plugin->name ) );
+                exit;
+
+        }
+
+        /**
+         * Redirects to the license screen if the license is invalid after the current screen is set.
+         *
+         * @since 5.3.3
+         *
+         * @param WP_Screen $screen Screen object.
+         */
+        public function maybe_block_on_screen( $screen ) {
+
+                if ( ! is_admin() ) {
+                        return;
+                }
+
+                if ( $this->check_license_key_valid() ) {
+                        return;
+                }
+
+                if ( $this->is_license_screen() ) {
+                        return;
+                }
+
+                if ( ! $this->is_plugin_screen( $screen ) ) {
+                        return;
+                }
+
+                wp_safe_redirect( admin_url( 'admin.php?page=' . $this->plugin->name ) );
+                exit;
+
+        }
 
 	/**
 	 * Returns parameters that are used for license requests

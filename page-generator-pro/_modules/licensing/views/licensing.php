@@ -12,13 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <header>
-	<h1>
-		<?php echo esc_html( $this->plugin->displayName ); ?>
+<h1>
+<?php echo esc_html( $this->plugin->displayName ); ?>
 
-                <span>
-                        <?php esc_html_e( 'Licensing (Optional)', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?>
-                </span>
-	</h1>
+<span>
+<?php esc_html_e( 'License Required', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?>
+</span>
+</h1>
 </header>
 
 <hr class="wp-header-end" />
@@ -77,12 +77,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<!-- Form Start -->
 					<form name="post" method="post" action="<?php echo ( isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' ); ?>">
 						<div id="normal-sortables" class="meta-box-sortables ui-sortable">                        
-                                                        <div class="postbox">
-                                                                <h3 class="hndle"><?php esc_html_e( 'License (Identification Only)', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></h3>
+<div class="postbox">
+<h3 class="hndle"><?php esc_html_e( 'License Key', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></h3>
 
-                                                                <div class="inside">
-                                                                        <p><?php esc_html_e( 'Adding a license name or key is optional and kept locally to help you identify this site. All features remain available regardless of what you enter.', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></p>
-                                                                </div>
+<div class="inside">
+<p><?php esc_html_e( 'Enter your license key to unlock Page Generator Pro. Access to all plugin features is blocked until a valid key is provided.', $this->plugin->name ); // phpcs:ignore WordPress.WP.I18n ?></p>
+</div>
 
                                                                 <?php
                                                                 // If the license key is defined in wp-config as a constant, just display it here and don't offer the option to edit.
@@ -96,7 +96,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                                                                         <?php
                                                                 } else {
                                                                         // Get from options table.
-                                                                        $license_key = get_option( $this->plugin->name . '_licenseKey' );
+$license_key = get_option( 'webmakerr_lpb_license' );
                                                                         ?>
                                                                         <div class="inside">
                                                                                 <input type="text" name="<?php echo esc_attr( $this->plugin->name ); ?>[licenseKey]" value="<?php echo esc_attr( $license_key ); ?>" class="widefat" />
