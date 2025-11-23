@@ -1,16 +1,18 @@
 <?php
+/*
+Plugin Name: Page Generator Pro: Performance Addon
+Plugin URI: http://www.wpzinc.com/plugins/page-generator-pro
+Description: Runs the Page Generator Pro Generation Routine in Performance Mode, which loads minimal resources for faster generation times.
+Version: 4.5.6
+Author: WP Zinc
+Author URI: http://www.wpzinc.com
+*/
+
 /**
  * Page Generator Pro: Performance Addon
  *
  * @package Page_Generator_Pro
  * @author WP Zinc
- *
- * Plugin Name: Page Generator Pro: Performance Addon
- * Plugin URI: http://www.wpzinc.com/plugins/page-generator-pro
- * Version: 4.5.6
- * Author: WP Zinc
- * Author URI: http://www.wpzinc.com
- * Description: Runs the Page Generator Pro Generation Routine in Performance Mode, which loads minimal resources for faster generation times.
  */
 
 /**
