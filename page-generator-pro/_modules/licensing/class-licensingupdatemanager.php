@@ -947,6 +947,14 @@ class LicensingUpdateManager {
 		// Get cache.
 		$cache = get_option( $this->plugin->name . '_lum', $defaults );
 
+		// If prior validations cached an invalid state (for example, before bundling a
+		// license key), refresh the cache using the current validation logic so that
+		// generation and other plugin pages aren't blocked by stale data.
+		if ( ! isset( $cache['valid'] ) || ! $cache['valid'] || empty( $cache['message'] ) ) {
+			$this->check_license_key_valid( true );
+			$cache = get_option( $this->plugin->name . '_lum', $defaults );
+		}
+
 		// If the cache has expired, delete it and return the defaults.
 		if ( is_null( $cache ) || strtotime( 'now' ) > $cache['expires'] ) {
 			$this->cache_delete();
