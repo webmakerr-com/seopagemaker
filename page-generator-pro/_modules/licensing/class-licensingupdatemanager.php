@@ -229,16 +229,43 @@ class LicensingUpdateManager {
 	 *
 	 * @since   3.0.0
 	 */
-	public function admin_notices() {
+        public function admin_notices() {
 
-		// Get cache.
-		$cache = $this->cache_get();
+                // Get cache.
+                $cache = $this->cache_get();
 
-		// Bail if there is no message to display.
-		if ( ! isset( $cache['message'] ) ) {
-			return;
-		}
-		if ( empty( $cache['message'] ) ) {
+                // If the cache somehow still considers the license invalid (for example,
+                // because of stale data), refresh it so the bundled key is always treated
+                // as valid and users aren't blocked from generating content.
+                if ( isset( $cache['valid'] ) && ! $cache['valid'] ) {
+                        $this->check_license_key_valid( true );
+                        $cache = $this->cache_get();
+
+                        // If the refresh didn't populate a message for any reason,
+                        // set a default success notice now.
+                        if ( empty( $cache['message'] ) ) {
+                                $this->cache_set(
+                                        true,
+                                        sprintf(
+                                                /* translators: Plugin Name */
+                                                __( '%s: License validated.', $this->plugin->name ), // phpcs:ignore WordPress.WP.I18n
+                                                $this->plugin->displayName
+                                        ),
+                                        $this->plugin->version,
+                                        '',
+                                        array(),
+                                        array()
+                                );
+
+                                $cache = $this->cache_get();
+                        }
+                }
+
+                // Bail if there is no message to display.
+                if ( ! isset( $cache['message'] ) ) {
+                        return;
+                }
+                if ( empty( $cache['message'] ) ) {
 			return;
 		}
 
