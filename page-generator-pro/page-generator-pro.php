@@ -1,16 +1,18 @@
 <?php
 /**
- * Webmakerr Location Pages WordPress Plugin.
- *
- * @package Page_Generator_Pro
- * @author WP Zinc
- *
  * Plugin Name: Webmakerr Location Pages
  * Plugin URI: http://www.wpzinc.com/plugins/page-generator-pro
+ * Description: The most powerful WordPress content generator plugin on the market.
  * Version: 5.3.3
  * Author: WP Zinc
  * Author URI: http://www.wpzinc.com
- * Description: The most powerful WordPress content generator plugin on the market.
+ * Text Domain: page-generator-pro
+ * Domain Path: /languages
+ * Requires at least: 5.0
+ * Requires PHP: 7.4
+ *
+ * @package Page_Generator_Pro
+ * @author WP Zinc
  */
 
 // Bail if Plugin is alread loaded.
