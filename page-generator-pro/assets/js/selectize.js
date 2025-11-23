@@ -157,11 +157,13 @@ function page_generator_pro_reinit_selectize() {
 			    	var action 				= $( selectize_instance ).data( 'action' ), // WP Registered AJAX Action.
 						api_call 			= $( selectize_instance ).data( 'api-call' ), // The API Call to make (zipcodes, cities, regions, counties, countries).
 						api_search_field 	= $( selectize_instance ).data( 'api-search-field' ) // The API Field to search.
-						api_fields 			= $( selectize_instance ).data( 'api-fields' ).split( ',' ); // Relative form fields to send in the AJAX request (e.g. region_id[],county_id[]).
+						api_fields 			= $( selectize_instance ).data( 'api-fields' ) // Relative form fields to send in the AJAX request (e.g. region_id[],county_id[]).
 						country_code 		= $( selectize_instance ).data( 'country-code' ), // The field to fetch the country code from and include in the request.
 						output_fields 		= $( selectize_instance ).data( 'output-fields' ).split( ',' ); // What to store as the <option> label.
 						value_field 		= $( selectize_instance ).data( 'value-field' ), // What to store as the <option> value.
 						nonce 				= $( selectize_instance ).data( 'nonce' ); // The nonce for the AJAX request to pass security.
+					// If no relational fields are defined, use an empty array instead of undefined.
+					api_fields = ( typeof api_fields === 'undefined' || ! api_fields.length ? [] : api_fields.split( ',' ) );
 
 			    	// Bail if the query is too short.
 			        if ( ! query.length || query.length < 3 ) {

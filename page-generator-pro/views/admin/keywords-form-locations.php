@@ -194,7 +194,7 @@
 											</div>
 
 											<div class="right">
-												<select name="region_id[]" multiple="multiple" class="wpzinc-selectize" data-action="page_generator_pro_georocket" data-api-call="get_regions" data-country-code="country_code" data-value-field="id" data-output-fields="region_name,country_code" data-nonce="<?php echo esc_attr( wp_create_nonce( 'generate_locations' ) ); ?>">
+                                                                                            <select name="region_id[]" multiple="multiple" class="wpzinc-selectize-api" data-action="page_generator_pro_georocket" data-api-call="get_regions" data-api-search-field="region_name" data-country-code="country_code" data-value-field="id" data-output-fields="region_name,country_code" data-nonce="<?php echo esc_attr( wp_create_nonce( 'generate_locations' ) ); ?>">
 												</select>
 
 												<p class="description">
