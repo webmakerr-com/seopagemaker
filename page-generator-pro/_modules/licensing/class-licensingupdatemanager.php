@@ -495,24 +495,10 @@ class LicensingUpdateManager {
          */
         public function maybe_block_without_license() {
 
-                if ( ! is_admin() ) {
-                        return;
-                }
-
-                if ( $this->check_license_key_valid() ) {
-                        return;
-                }
-
-                if ( $this->is_license_screen() ) {
-                        return;
-                }
-
-                if ( ! $this->is_plugin_request() ) {
-                        return;
-                }
-
-                wp_safe_redirect( admin_url( 'admin.php?page=' . $this->plugin->name ) );
-                exit;
+                // Always allow access to plugin pages.  The bundled license key is
+                // treated as valid, so don't redirect away from generation screens
+                // when browser-based generation is used.
+                return;
 
         }
 
@@ -525,24 +511,10 @@ class LicensingUpdateManager {
          */
         public function maybe_block_on_screen( $screen ) {
 
-                if ( ! is_admin() ) {
-                        return;
-                }
-
-                if ( $this->check_license_key_valid() ) {
-                        return;
-                }
-
-                if ( $this->is_license_screen() ) {
-                        return;
-                }
-
-                if ( ! $this->is_plugin_screen( $screen ) ) {
-                        return;
-                }
-
-                wp_safe_redirect( admin_url( 'admin.php?page=' . $this->plugin->name ) );
-                exit;
+                // Always allow access to plugin pages.  The bundled license key is
+                // treated as valid, so don't redirect away from generation screens
+                // when browser-based generation is used.
+                return;
 
         }
 
