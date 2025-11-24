@@ -110,10 +110,11 @@ function page_generator_pro_reinit_selectize() {
 			    },
 			    load: function( query, callback ) {
 
-			        // Bail if the query is too short.
-			        if ( ! query.length || query.length < 3 ) {
-			        	return callback();
-			        }
+                                // Bail if the query is too short.
+                                // Minimum length is two to support two letter Region / State abbreviations.
+                                if ( ! query.length || query.length < 2 ) {
+                                        return callback();
+                                }
 
 			       	// Send request to Plugin's AJAX endpoint.
 			       	$.ajax( {
@@ -166,9 +167,9 @@ function page_generator_pro_reinit_selectize() {
 					api_fields = ( typeof api_fields === 'undefined' || ! api_fields.length ? [] : api_fields.split( ',' ) );
 
 			    	// Bail if the query is too short.
-			        if ( ! query.length || query.length < 3 ) {
-			        	return callback();
-			        }
+                                if ( ! query.length || query.length < 2 ) {
+                                        return callback();
+                                }
 
 			        // Build data.
 			        var data = {
